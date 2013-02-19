@@ -13,11 +13,11 @@ public class SecondGame extends BasicGame{
 	
 	Image land = null;
 	Player player = null;
-	Block firstBlock = null;
+	Block firstBlock = null, secondBlock = null;
 	static float x, y, verticalSpeed;
 	public static final float SURFACE_Y = 288;
 	public static final float CENTER_X = 400;
-	boolean stop = false;
+	boolean stop = true;
 	
 	public SecondGame() {
 		super("SecondGame");
@@ -29,6 +29,7 @@ public class SecondGame extends BasicGame{
 		land.draw(x, y);
 		player.getImage().draw(player.getX(), player.getY());
 		firstBlock.getImage().draw(firstBlock.getX(), firstBlock.getY());
+		secondBlock.getImage().draw(secondBlock.getX(), secondBlock.getY());
 	}
 
 	@Override
@@ -39,6 +40,7 @@ public class SecondGame extends BasicGame{
 		land = new Image("dat/level_1.png");
 		player = new Player("dat/walk0001.png");
 		firstBlock = new Block("dat/ground32x32.png", 288, SURFACE_Y - 32);
+		secondBlock = new Block("dat/ground32x32.png", 288-32, SURFACE_Y);
 	}
 
 	@Override
@@ -52,35 +54,47 @@ public class SecondGame extends BasicGame{
 			x -= .1f * delta;
 		}
 		
-		if (input.isKeyDown(Input.KEY_W) && !player.isJump()) {
+		if (input.isKeyDown(Input.KEY_W) && stop) {
+			System.out.println(stop);
 			verticalSpeed = -.2f * delta;
 			player.setJump(true);
+			stop = false;
 		}
 		
 		if (y > 100 && player.isJump()) {
 			verticalSpeed = .2f * delta;
 		}
 		
-		if ( y >= 0 && player.isJump()) {
+		if (player.isJump()) {
 			if (!stop)
 				y -= verticalSpeed;
 		}
 		else {
-			y = 0;
 			player.setJump(false);
 		}
 		
 		if (player.getBounds().intersects(firstBlock.getBounds())) {
-			System.out.println("woo");
-			x -=.1f * delta;
+			if (firstBlock.getX() < player.getX()){
+				x -=.1f * delta;								
+			}
+			else
+				x += .1f * delta;
+
 		}
 		
 		if (player.getBounds().intersects(firstBlock.getTopBounds())) {
-			System.out.println("foo");
-			stop = true;
+			if (!stop)
+				stop = true;
+			if (player.isJump())
+				player.setJump(false);
 		}
-		else{
-			stop = false;
+		
+		
+		if (player.getBounds().intersects(secondBlock.getTopBounds())) {
+			if (!stop)
+				stop = true;
+			if (player.isJump())
+				player.setJump(false);
 		}
 	}
 	
